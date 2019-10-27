@@ -1,12 +1,8 @@
-import React from 'react';
-import './App.css';
+import React from "react";
+import Colors from "./components/Colors";
 
-function App() {
-  return (
-    <div className="App">
-      color dots
-    </div>
-  );
-}
+const App = () => {
+  return <Colors />;
+};
 
 export default App;
