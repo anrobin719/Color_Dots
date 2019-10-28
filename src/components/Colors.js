@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback, useReducer } from "react";
 
 import ColorList from "./ColorList";
+import ColorForm from "./ColorForm";
 
 const colorReducer = (curColors, action) => {
   switch (action.type) {
@@ -41,24 +42,32 @@ const Colors = props => {
     console.log("rendering colors", colorList);
   }, [colorList]);
 
-  const fetchColorList = () => {
+  const addColorHandler = colorObj => {
     dispatchHttp({ type: "SEND" });
-    fetch("", {
-      method: "GET"
+    fetch(`https://react-hooks-repository.firebaseio.com/colors.json`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(colorObj)
     })
       .then(res => {
         dispatchHttp({ type: "RESPONSE" });
         return res.json();
       })
-      .then(res => {
-        dispatchColor({ type: "ADD" });
-      })
-      .catch();
+      .then(() => {
+        dispatchColor({ type: "ADD", color: colorObj });
+      });
   };
+
+  const fetchColorList = useCallback(loadedColors => {
+    dispatchColor({ type: "SET", colors: loadedColors });
+  }, []);
 
   return (
     <>
-      <ColorList colors={colorList} />
+      <ColorForm onAddColor={addColorHandler} />
+      <ColorList colors={colorList} onLoadColorList={fetchColorList} />
     </>
   );
 };
